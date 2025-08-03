@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Happy Birthday SRAVANI</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      overflow: hidden;
+      height: 100%;
+      font-family: 'monospace';
+      color: white;
+    }
+
+    canvas {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    .countdown {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(1);
+      font-family: Impact, sans-serif;
+      font-size: 20vw;
+      color: hotpink;
+      text-shadow: 0 0 15px #96476e, 0 0 25px #a76d77;
+      z-index: 10;
+      opacity: 1;
+      transition: all 0.8s ease;
+    }
+
+    .message {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: Impact, sans-serif;
+      font-size: 10vw;
+      color: hotpink;
+      font-weight: bold;
+      z-index: 10;
+      display: none;
+      text-align: center;
+      text-shadow: 0 0 5px #6d434a, 0 0 20px #b5427c;
+      transition: all 0.5s ease;
+    }
+
+    /* Book Container */
+    .book-container {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 20;
+      perspective: 1000px;
+    }
+
+    /* Closed Book */
+    .book {
+      width: 240px;
+      height: 320px;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.8s ease;
+    }
+
+    .book-closed {
+      width: 240px;
+      height: 320px;
+      background: linear-gradient(145deg, #e6e6fa, #d8bfd8, #dda0dd);
+      border-radius: 8px;
+      box-shadow: 
+        0 8px 16px rgba(0,0,0,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: all 0.8s ease;
+    }
+
+    .book-closed::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.1) 50%, transparent 100%);
+      border-radius: 8px;
+    }
+
+    .book-cover-content {
+      text-align: center;
+      color: #4a0e4e;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .cover-video {
+      width: 90%;
+      height: 58%;
+      border-radius: 8px;
+      object-fit: cover;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+
+    .cover-title {
+      font-family: 'Georgia', serif;
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 5px;
+      text-shadow: 1px 1px 2px rgba(255,255,255,0.3);
+    }
+
+    .cover-subtitle {
+      font-family: 'Georgia', serif;
+      font-size: 24px;
+      font-weight: bold;
+      color: #8b008b;
+      text-shadow: 1px 1px 2px rgba(255,255,255,0.3);
+      margin-bottom: 5px;
+    }
+
+    .cover-emoji {
+      font-size: 20px;
+      margin: 5px 0;
+    }
+
+    .tap-hint {
+      font-size: 12px;
+      opacity: 0.8;
+      margin-top: 5px;
+      font-style: italic;
+    }
+
+    /* Open Book */
+    .book-open {
+      width: 500px;
+      height: 320px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      overflow: hidden;
+    }
+
+    .book-spine {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: linear-gradient(to bottom, #ddd, #bbb, #ddd);
+      transform: translateX(-50%);
+      box-shadow: 
+        -1px 0 2px rgba(0,0,0,0.2),
+        1px 0 2px rgba(0,0,0,0.2);
+    }
+
+    .page {
+      position: absolute;
+      width: 248px;
+      height: 320px;
+      background: #fefefe;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.6s ease;
+      cursor: pointer;
+    }
+
+    .page-left {
+      left: 0;
+      border-radius: 8px 0 0 8px;
+      border-right: 2px solid #f0f0f0;
+    }
+
+    .page-right {
+      right: 0;
+      border-radius: 0 8px 8px 0;
+      border-left: 2px solid #f0f0f0;
+    }
+
+    .page-content {
+      text-align: center;
+      padding: 15px;
+      color: #333;
+      font-family: 'Georgia', serif;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .page-image {
+      width: 80%;
+      height: 50%;
+      border-radius: 8px;
+      object-fit: cover;
+      object-position: top center;
+      margin-bottom: 10px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+      border: 2px solid #f0f0f0;
+    }
+
+    .page-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #8b008b;
+      margin-bottom: 8px;
+    }
+
+    .page-text {
+      font-size: 12px;
+      line-height: 1.4;
+      color: #555;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .page-emoji {
+      font-size: 24px;
+      margin: 5px 0;
+    }
+
+    .page-number {
+      position: absolute;
+      bottom: 15px;
+      font-size: 12px;
+      color: #999;
+    }
+
+    .page-left .page-number {
+      left: 20px;
+    }
+
+    .page-right .page-number {
+      right: 20px;
+    }
+
+    /* Navigation hints */
+    .nav-hint {
+      position: absolute;
+      bottom: 40px;
+      font-size: 12px;
+      color: #666;
+      font-style: italic;
+    }
+
+    .nav-left {
+      left: 20px;
+    }
+
+    .nav-right {
+      right: 20px;
+    }
+
+    /* Hover effects */
+    .book-closed:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.4);
+    }
+
+    .page:hover {
+      background: #f8f8ff;
+    }
+
+    /* Page flip animation */
+    .page-flipping {
+      animation: pageFlip 0.6s ease-in-out;
+    }
+
+    @keyframes pageFlip {
+      0% { transform: rotateY(0deg); }
+      50% { transform: rotateY(-90deg); }
+      100% { transform: rotateY(0deg); }
+    }
+
+  </style>
+</head>
+<body>
+  <canvas id="matrix"></canvas>
+  <div id="countdown" class="countdown">3</div>
+  <div id="message" class="message"></div>
+
+  <!-- Book Container -->
+  <div id="bookContainer" class="book-container">
+    <div id="book" class="book">
+      
+      <!-- Closed Book -->
+      <div id="bookClosed" class="book-closed">
+        <div class="book-cover-content">
+          <!-- Birthday Video -->
+          <video class="cover-video" autoplay muted loop playsinline>
+            <source src="images/sravs.mp4" type="video/mp4">
+            <!-- Fallback content if video doesn't load -->
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; background: linear-gradient(45deg, #ff69b4, #ff1493); border-radius: 8px;">
+              <div style="font-size: 40px;">🎂</div>
+              <div style="font-size: 24px; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">HAPPY BIRTHDAY</div>
+              <div style="font-size: 28px; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">SRAVANI</div>
+              <div style="font-size: 40px;">🎉</div>
+            </div>
+          </video>
+          
+          <div class="cover-title">HAPPY BIRTHDAY</div>
+          <div class="cover-subtitle">SRAVANI</div>
+          <div class="cover-emoji">🎂🎉</div>
+          <div class="tap-hint">Tap to open</div>
+        </div>
+      </div>
+
+      <!-- Closed Book After Reading -->
+      <div id="bookClosedFinal" class="book-closed" style="display: none;">
+        <div class="book-cover-content">
+          <div style="font-size: 80px; margin-bottom: 20px;">🤲</div>
+          <div style="font-size: 40px; color: #ff69b4;">💖</div>
+          <div class="cover-title" style="margin-top: 20px; color: #8b008b;">Thank You</div>
+          <div class="cover-subtitle" style="font-size: 18px;">for Reading</div>
+          <div class="tap-hint">Tap to reopen</div>
+        </div>
+      </div>
+
+      <!-- Open Book -->
+      <div id="bookOpen" class="book-open">
+        <div class="book-spine"></div>
+        
+        <!-- Left Page -->
+        <div class="page page-left" id="leftPage">
+          <div class="page-content">
+            <img class="page-image" id="leftImage" src="https://picsum.photos/200/150?random=1" alt="Birthday Memory">
+            <div class="page-title" id="leftTitle">Dear SRAVANI</div>
+            <div class="page-text" id="leftText">
+              Today is your special day!<br>
+              A day to celebrate all the<br>
+              wonderful moments ahead.
+            </div>
+            <div class="page-emoji" id="leftEmoji">🌟</div>
+            <div class="page-number" id="leftPageNum">1</div>
+            <div class="nav-hint nav-left" id="leftHint" style="display: none;">← Previous</div>
+          </div>
+        </div>
+
+        <!-- Right Page -->
+        <div class="page page-right" id="rightPage">
+          <div class="page-content">
+            <img class="page-image" id="rightImage" src="https://picsum.photos/200/150?random=2" alt="Birthday Wishes">
+            <div class="page-title" id="rightTitle">Birthday Wishes</div>
+            <div class="page-text" id="rightText">
+              May this new year bring you<br>
+              endless happiness, love, and<br>
+              beautiful memories to cherish!
+            </div>
+            <div class="page-emoji" id="rightEmoji">🎈</div>
+            <div class="page-number" id="rightPageNum">2</div>
+            <div class="nav-hint nav-right" id="rightHint">Next →</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <!-- Background Music -->
+<audio id="bgMusic" src="images/funk.mp3" loop preload="auto"></audio>
+
+<!-- Mute / Unmute Button -->
+<button id="musicBtn" style="
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 999;
+  background: rgba(255,105,180,0.8);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+">
+  🔊 Sound On
+</button>
+
+
+  <script>
+    // Matrix Background
+    const canvas = document.getElementById('matrix');
+    const ctx = canvas.getContext('2d');
+    
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    const letters = "Happy Birthday to you SRAVANI".split('');
+    const fontSize = 14;
+    let columns = Math.floor(canvas.width / fontSize);
+    let drops = Array.from({ length: columns }, () => Math.floor(Math.random() * canvas.height / fontSize));
+    let matrixInterval;
+
+    function drawMatrix() {
+      // Semi-transparent black background for trailing effect
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Pink text for the matrix rain
+      ctx.fillStyle = '#ff69b4';
+      ctx.font = fontSize + 'px monospace';
+
+      // Recalculate columns if window was resized
+      const newColumns = Math.floor(canvas.width / fontSize);
+      if (newColumns !== columns) {
+        columns = newColumns;
+        drops = Array.from({ length: columns }, () => Math.floor(Math.random() * canvas.height / fontSize));
+      }
+
+      for (let i = 0; i < drops.length; i++) {
+        // Pick random character from the birthday message
+        const text = letters[Math.floor(Math.random() * letters.length)];
+        const x = i * fontSize;
+        const y = drops[i] * fontSize;
+        
+        ctx.fillText(text, x, y);
+
+        // Reset drop to top when it goes off screen, with some randomness
+        if (y > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        
+        drops[i]++;
+      }
+    }
+
+    // Start the matrix animation
+    matrixInterval = setInterval(drawMatrix, 50);
+
+    // Love and Stars Animation - Professional Version
+    let particles = [];
+    let loveInterval;
+
+    function createParticle() {
+      const particleTypes = [
+        { type: 'circle', color: '#ff69b4', size: Math.random() * 3 + 1 },
+        { type: 'circle', color: '#ffc0cb', size: Math.random() * 2 + 1 },
+        { type: 'circle', color: '#ffffff', size: Math.random() * 2 + 0.5 },
+        { type: 'star', color: '#ffb6c1', size: Math.random() * 4 + 2 },
+        { type: 'heart', color: '#ff1493', size: Math.random() * 3 + 1.5 }
+      ];
+      
+      const particleType = particleTypes[Math.floor(Math.random() * particleTypes.length)];
+      
+      return {
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        type: particleType.type,
+        color: particleType.color,
+        size: particleType.size,
+        opacity: Math.random() * 0.6 + 0.2,
+        twinkleSpeed: Math.random() * 0.01 + 0.005,
+        drift: {
+          x: (Math.random() - 0.5) * 0.3,
+          y: (Math.random() - 0.5) * 0.3
+        },
+        rotation: Math.random() * Math.PI * 2,
+        rotationSpeed: (Math.random() - 0.5) * 0.02
+      };
+    }
+
+    function drawStar(ctx, x, y, size, color, opacity) {
+      ctx.save();
+      ctx.globalAlpha = opacity;
+      ctx.fillStyle = color;
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1;
+      
+      ctx.beginPath();
+      for (let i = 0; i < 5; i++) {
+        const angle = (i * 4 * Math.PI) / 5;
+        const radius = i % 2 === 0 ? size : size * 0.5;
+        const px = x + Math.cos(angle) * radius;
+        const py = y + Math.sin(angle) * radius;
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawHeart(ctx, x, y, size, color, opacity) {
+      ctx.save();
+      ctx.globalAlpha = opacity;
+      ctx.fillStyle = color;
+      
+      const heartSize = size;
+      ctx.beginPath();
+      ctx.moveTo(x, y + heartSize * 0.3);
+      
+      // Left curve
+      ctx.bezierCurveTo(
+        x - heartSize * 0.5, y - heartSize * 0.2,
+        x - heartSize * 0.5, y + heartSize * 0.1,
+        x, y + heartSize * 0.7
+      );
+      
+      // Right curve
+      ctx.bezierCurveTo(
+        x + heartSize * 0.5, y + heartSize * 0.1,
+        x + heartSize * 0.5, y - heartSize * 0.2,
+        x, y + heartSize * 0.3
+      );
+      
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawProfessionalBackground() {
+      // Create subtle gradient background
+      const gradient = ctx.createRadialGradient(
+        canvas.width / 2, canvas.height / 2, 0,
+        canvas.width / 2, canvas.height / 2, Math.max(canvas.width, canvas.height) / 2
+      );
+      gradient.addColorStop(0, 'rgba(0, 0, 0, 0.95)');
+      gradient.addColorStop(1, 'rgba(20, 0, 20, 0.98)');
+      
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Create new particles occasionally
+      if (particles.length < 80 && Math.random() < 0.15) {
+        particles.push(createParticle());
+      }
+
+      // Draw and update particles
+      particles.forEach((particle, index) => {
+        // Twinkling effect
+        particle.opacity += Math.sin(Date.now() * particle.twinkleSpeed) * 0.005;
+        particle.opacity = Math.max(0.1, Math.min(0.8, particle.opacity));
+
+        // Gentle drift
+        particle.x += particle.drift.x;
+        particle.y += particle.drift.y;
+        particle.rotation += particle.rotationSpeed;
+
+        // Wrap around screen
+        if (particle.x > canvas.width + 10) particle.x = -10;
+        if (particle.x < -10) particle.x = canvas.width + 10;
+        if (particle.y > canvas.height + 10) particle.y = -10;
+        if (particle.y < -10) particle.y = canvas.height + 10;
+
+        // Draw particle based on type
+        if (particle.type === 'circle') {
+          ctx.save();
+          ctx.globalAlpha = particle.opacity;
+          ctx.fillStyle = particle.color;
+          ctx.beginPath();
+          ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+          ctx.fill();
+          
+          // Add subtle glow
+          ctx.shadowColor = particle.color;
+          ctx.shadowBlur = particle.size * 2;
+          ctx.fill();
+          ctx.restore();
+          
+        } else if (particle.type === 'star') {
+          drawStar(ctx, particle.x, particle.y, particle.size, particle.color, particle.opacity);
+          
+        } else if (particle.type === 'heart') {
+          ctx.save();
+          ctx.translate(particle.x, particle.y);
+          ctx.rotate(particle.rotation);
+          drawHeart(ctx, 0, 0, particle.size, particle.color, particle.opacity);
+          ctx.restore();
+        }
+
+        // Remove old particles occasionally
+        if (Math.random() < 0.002) {
+          particles.splice(index, 1);
+        }
+      });
+    }
+
+    function startLoveAnimation() {
+      // Stop matrix rain
+      clearInterval(matrixInterval);
+      
+      // Clear canvas
+      ctx.fillStyle = 'rgba(0, 0, 0, 1)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Initialize particles
+      particles = [];
+      for (let i = 0; i < 40; i++) {
+        particles.push(createParticle());
+      }
+      
+      // Start professional animation
+      loveInterval = setInterval(drawProfessionalBackground, 60);
+    }
+
+    // Countdown & Transitions
+    let count = 3;
+    const countdownEl = document.getElementById('countdown');
+    const messageEl = document.getElementById('message');
+    const bookContainerEl = document.getElementById('bookContainer');
+
+    function runCountdown() {
+      const interval = setInterval(() => {
+        countdownEl.style.transform = "translate(-50%, -50%) scale(2)";
+        setTimeout(() => {
+          countdownEl.style.opacity = 0;
+        }, 600);
+        setTimeout(() => {
+          count--;
+          if (count === 0) {
+            clearInterval(interval);
+            countdownEl.style.display = "none";
+            showMessage();
+          } else {
+            countdownEl.innerText = count;
+            countdownEl.style.opacity = 1;
+            countdownEl.style.transform = "translate(-50%, -50%) scale(1)";
+          }
+        }, 900);
+      }, 1500);
+    }
+
+    function showMessage() {
+      messageEl.innerText = "HAPPY BIRTHDAY";
+      messageEl.style.display = "block";
+      setTimeout(() => {
+        messageEl.innerText = "SRAVANI";
+      }, 2000);
+      setTimeout(() => {
+        messageEl.style.display = "none";
+        // Start the love and stars animation when message disappears
+        startLoveAnimation();
+        showBook();
+      }, 4000);
+    }
+
+    // Book Data - Multiple pages with images
+    const bookPages = [
+  {
+    left: { 
+      title: "Dear SRAVANI", 
+      emoji: "🌟", 
+      text: "Today is your special day!<br>A day to celebrate all the<br>wonderful moments ahead.", 
+      pageNum: "1",
+      image: "images/sravs.jpg"
+    },
+    right: { 
+      title: "Birthday Wishes", 
+      emoji: "🎈", 
+      text: "May this new year bring you<br>endless happiness, love, and<br>beautiful memories to cherish!", 
+      pageNum: "2",
+      image: "images/sravs1.jpg"
+    }
+  },
+  {
+    left: { 
+      title: "Special Day", 
+      emoji: "🎂", 
+      text: "Another year older, another<br>year wiser, and even more<br>amazing than before!", 
+      pageNum: "3",
+      image: "images/sravs1.jpg"
+    },
+    right: { 
+      title: "Celebration", 
+      emoji: "🎉", 
+      text: "Time to party, laugh, dance,<br>and make this birthday<br>absolutely unforgettable!", 
+      pageNum: "4",
+      image: "images/sravs1.jpg"
+    }
+  },
+  {
+    left: { 
+      title: "Dreams & Goals", 
+      emoji: "✨", 
+      text: "May all your dreams come true<br>and may this year bring you<br>closer to your goals!", 
+      pageNum: "5",
+      image: "images/sravs1.jpg"
+    },
+    right: { 
+      title: "Final Wishes", 
+      emoji: "💝", 
+      text: "Wishing you love, laughter,<br>joy, and all your favorite<br>things today!", 
+      pageNum: "6",
+      image: "images/sravs1.jpg"
+    }
+  }
+];
+
+    // Book Logic
+    function showBook() {
+      const bookClosed = document.getElementById('bookClosed');
+      const bookClosedFinal = document.getElementById('bookClosedFinal');
+      const bookOpen = document.getElementById('bookOpen');
+      const leftPage = document.getElementById('leftPage');
+      const rightPage = document.getElementById('rightPage');
+      const leftHint = document.getElementById('leftHint');
+      const rightHint = document.getElementById('rightHint');
+      
+      let isBookOpen = false;
+      let currentSpread = 0;
+      let hasBeenRead = false;
+      const totalSpreads = bookPages.length;
+
+      bookContainerEl.style.display = "block";
+
+      function updatePageContent() {
+        const spread = bookPages[currentSpread];
+        
+        // Update left page
+        document.getElementById('leftImage').src = spread.left.image;
+        document.getElementById('leftTitle').innerHTML = spread.left.title;
+        document.getElementById('leftEmoji').innerHTML = spread.left.emoji;
+        document.getElementById('leftText').innerHTML = spread.left.text;
+        document.getElementById('leftPageNum').innerHTML = spread.left.pageNum;
+        
+        // Update right page
+        document.getElementById('rightImage').src = spread.right.image;
+        document.getElementById('rightTitle').innerHTML = spread.right.title;
+        document.getElementById('rightEmoji').innerHTML = spread.right.emoji;
+        document.getElementById('rightText').innerHTML = spread.right.text;
+        document.getElementById('rightPageNum').innerHTML = spread.right.pageNum;
+
+        // Update navigation hints
+        if (currentSpread > 0) {
+          leftHint.style.display = 'block';
+        } else {
+          leftHint.style.display = 'none';
+        }
+
+        if (currentSpread < totalSpreads - 1) {
+          rightHint.innerHTML = 'Next →';
+        } else {
+          rightHint.innerHTML = 'Close Book →';
+        }
+      }
+
+      function openBook() {
+        console.log('Opening book...');
+        bookClosed.style.display = 'none';
+        bookClosedFinal.style.display = 'none';
+        bookOpen.style.display = 'block';
+        isBookOpen = true;
+        updatePageContent();
+      }
+
+      function closeBook() {
+        console.log('Closing book...');
+        bookOpen.style.display = 'none';
+        isBookOpen = false;
+        currentSpread = 0;
+        
+        // Show different closed state based on whether book has been read
+        if (hasBeenRead) {
+          bookClosed.style.display = 'none';
+          bookClosedFinal.style.display = 'block';
+        } else {
+          bookClosed.style.display = 'block';
+          bookClosedFinal.style.display = 'none';
+        }
+      }
+
+      // Tap original closed book to open
+      bookClosed.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('Book clicked, isBookOpen:', isBookOpen);
+        if (!isBookOpen) {
+          openBook();
+        }
+      });
+
+      // Tap final closed book to reopen
+      bookClosedFinal.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('Final book clicked, isBookOpen:', isBookOpen);
+        if (!isBookOpen) {
+          openBook();
+        }
+      });
+
+      // Left page click - previous spread
+      leftPage.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (isBookOpen && currentSpread > 0) {
+          rightPage.classList.add('page-flipping');
+          setTimeout(() => {
+            currentSpread--;
+            updatePageContent();
+            rightPage.classList.remove('page-flipping');
+          }, 300);
+        }
+      });
+
+      // Right page click - next spread or close
+      rightPage.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (isBookOpen) {
+          if (currentSpread < totalSpreads - 1) {
+            rightPage.classList.add('page-flipping');
+            setTimeout(() => {
+              currentSpread++;
+              updatePageContent();
+              rightPage.classList.remove('page-flipping');
+            }, 300);
+          } else {
+            // Last page - close book and mark as read
+            hasBeenRead = true;
+            closeBook();
+          }
+        }
+      });
+
+      // Click outside to close
+      document.addEventListener('click', (e) => {
+        if (isBookOpen && !bookOpen.contains(e.target)) {
+          hasBeenRead = true;
+          closeBook();
+        }
+      });
+    }
+
+    runCountdown();
+    // Background music logic
+const music = document.getElementById('bgMusic');
+const musicBtn = document.getElementById('musicBtn');
+
+// Try to autoplay after interaction
+document.addEventListener('click', () => {
+  if (music.paused) {
+    music.play().catch(() => {});
+  }
+});
+
+// Toggle mute/unmute
+musicBtn.addEventListener('click', () => {
+  if (music.paused) {
+    music.play();
+    musicBtn.innerHTML = '🔊 Sound On';
+  } else {
+    music.pause();
+    musicBtn.innerHTML = '🔇 Sound Off';
+  }
+});
+
+  </script>
+</body>
+</html>
