@@ -1,0 +1,30 @@
+# Ignore all browser and system junk
+AppData/
+node_modules/
+.DS_Store
+Thumbs.db
+*.log
+.cache/
+.env
+*.swp
+*.tmp
+*.bak
+*.lock
+
+# VS Code
+.vscode/
+
+# OS/Editor junk
+*.iml
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.user
+
+# Images and local browser cache
+*.webp
+*.db
+*.leveldb
+*.localstorage
